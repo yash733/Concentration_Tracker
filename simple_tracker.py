@@ -1,17 +1,27 @@
 import subprocess
 import sys 
 import os
+from logger import logging
+
+logger1=logging.getLogger('Running')
+logger1.setLevel(logging.DEBUG)
+
+logger2=logging.getLogger('Error/Exception')
+logger2.setLevel(logging.ERROR)
+
 
 def install_requirements():
-    flag_file = 'd:\\EDA\\Face_Detect_timer\\.first_run'
+    logger1.critical('First time run detected. Installing requirements...')
+    flag_file = os.getcwd() + '\\.first_run'
     if not os.path.exists(flag_file):
         print("First run detected. Installing requirements...")
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'd:\\EDA\\Face_Detect_timer\\requirements.txt'])
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', f'{os.getcwd()}\\requirements.txt'])
         # Create flag file after successful installation
         with open(flag_file, 'w') as f:
             f.write('Installation completed')
 
 install_requirements()
+
 
 import cv2
 import keyboard
@@ -23,13 +33,15 @@ def start_fresh():
 
         if keyboard.is_pressed('enter'):
             try:
-                os.remove(os.getcwd() + '\\Face_Detect_timer\\prevoius_elapsed_time')
+                os.remove(os.getcwd() + 'prevoius_elapsed_time')
                 print("Starting fresh...")
+                logger1.info('Starting fresh...')
             except FileNotFoundError:
                 print("No previous session found. Starting fresh...")            
             return False
         elif keyboard.is_pressed('shift'):
             print('Continuing from previous session...')
+            logger1.info('Continuing from previous session...')
 
             return False
 
@@ -38,7 +50,7 @@ class CodeArea:
     def __init__(self):
         
         # Load the face cascade
-        self.face_cascade = cv2.CascadeClassifier("Face_Detect_timer\\haarcascade_frontalface_alt.xml")
+        self.face_cascade = cv2.CascadeClassifier(f"{os.getcwd()}\\haarcascade_frontalface_alt.xml")
 
         # Initialize variables
         self.cap = cv2.VideoCapture(0)
@@ -55,16 +67,19 @@ class CodeArea:
         self.elapsed_pause_time = 0
 
     def save_prev_time(self, elapsed_time):
-        with open(os.getcwd() + '\\Face_Detect_timer\\prevoius_elapsed_time', 'w+') as time_record:
+        with open(os.getcwd() + '\\prevoius_elapsed_time', 'w+') as time_record:
             time_record.write(str(elapsed_time))
-            time_record.flush()
+            time_record.flush() 
+            '''FLUSH() method is used to force the data written to a file or output stream to be immediately transferred from the internal buffer to the destination.'''
+            logger1.critical('Previous time saved')
     
     def fetch_prev_time(self):
             try:
-                with open(os.getcwd() + '\\Face_Detect_timer\\prevoius_elapsed_time', 'r') as time_fetch:
+                with open(os.getcwd() + '\\prevoius_elapsed_time', 'r') as time_fetch:
                     elapsed_time = float(time_fetch.readline().strip())
                     return elapsed_time
             except:
+                logger2.error('Unable to fetching previous time')
                 return False
             
 
@@ -99,6 +114,7 @@ class CodeArea:
                                 self.start_time = time()
                             self.is_running = True
                             #self.start_time = time()
+                            logger1.info('Face detected')
 
 
                         self.face_detected = True
@@ -111,6 +127,7 @@ class CodeArea:
                             #self.
                             #  = ()
                         self.face_detected = False
+                        logger1.warning('No face detected')
 
                 # Display the timer on the frame
                 if self.is_running:
@@ -137,6 +154,7 @@ class CodeArea:
                     self.cap.release()
                     cv2.destroyWindow('img')
                     print('Paused...')
+                    logger1.info('Paused')
 
             elif keyboard.is_pressed('shift+q+e'):  # Resume manually
                 if self.manual_pause:
@@ -146,12 +164,14 @@ class CodeArea:
                     #self.is_running = True
                     self.last_check_time = time() - 60 
                     print('Resumed...')
+                    logger1.info('Resumed')
 
             if cv2.waitKey(1) & 0xFF == 27:  # Exit on ESC
                 if self.is_running:
                     self.elapsed_time_before_pause += time() - self.start_time
                     self.save_prev_time(self.elapsed_time_before_pause)
                 print('Exiting...')
+                logger1.warning('Exiting...')
                 break
 
         def __del__(self):
@@ -162,6 +182,7 @@ class CodeArea:
             It returns True if the attribute exists, otherwise False.'''    
             if hasattr(self, 'cap'): 
                 self.cap.release() 
+                logger2.critical('Camera released sucessfully')
     
         '''if self.cap.isOpened():
 

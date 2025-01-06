@@ -1,0 +1,7 @@
+2025-01-06 18:19:54,871 - Running - CRITICAL - First time run detected. Installing requirements...
+2025-01-06 18:20:08,370 - Running - WARNING - No face detected
+2025-01-06 18:20:12,077 - Running - WARNING - No face detected
+2025-01-06 18:20:17,117 - Running - WARNING - No face detected
+2025-01-06 18:20:22,149 - Running - INFO - Face detected
+2025-01-06 18:21:13,161 - Running - CRITICAL - Previous time saved
+2025-01-06 18:21:13,161 - Running - WARNING - Exiting...
