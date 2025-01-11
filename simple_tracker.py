@@ -33,7 +33,7 @@ def start_fresh():
 
         if keyboard.is_pressed('enter'):
             try:
-                os.remove(os.getcwd() + 'prevoius_elapsed_time')
+                os.remove(os.getcwd() + '\\prevoius_elapsed_time')
                 print("Starting fresh...")
                 logger1.info('Starting fresh...')
             except FileNotFoundError:
